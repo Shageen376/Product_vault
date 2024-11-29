@@ -3,33 +3,33 @@ import ReactDOM from 'react-dom/client';
 import { Footer, Navbar } from './components/layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Contact from './pages/Contact';
+
 import NotFound from './pages/NotFound';
-import ProductList from './pages/admin/products/ProductList';
-import CreateProduct from './pages/admin/products/CreateProduct';
-import EditProduct from './pages/admin/products/EditProduct';
+import EmployeeList from './pages/admin/products/EmployeeList';
+import CreateEmployee from './pages/admin/products/CreateEmployee';
+import EditEmployee from './pages/admin/products/EditEmployee';
 import Home from './pages/Home/Home';
-import Profile from './pages/admin/Profile/Profile';
-import LandingPage from './pages/LandingPage/LandingPage';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function App() {
   const location = useLocation();
-  const isLandingPage = location.pathname === "/";
+
+  // Exclude Navbar and Footer only on specific paths
+  const noNavbarFooter = ["/", "/home"].includes(location.pathname);
 
   return (
     <>
-      {!isLandingPage && <Navbar />}
+      {!noNavbarFooter && <Navbar />}
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path='/admin/products' element={<ProductList />} />
-        <Route path='/admin/products/create' element={<CreateProduct />} />
-        <Route path='/admin/products/edit/:id' element={<EditProduct />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/employee-list" element={<EmployeeList />} />
+        <Route path="/admin/employees/create" element={<CreateEmployee />} />
+        <Route path="/admin/employees/edit/:id" element={<EditEmployee />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isLandingPage && <Footer />}
+      {!noNavbarFooter && <Footer />}
     </>
   );
 }

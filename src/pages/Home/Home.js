@@ -5,49 +5,34 @@ import './Home.css';
 
 function Home() {
   const [showModal, setShowModal] = useState(false);
-  const [loginInputs, setLoginInputs] = useState({ email: "", password: "" })
-  const [registerInputs, setRegisterInputs] = useState({ name: "", email: "", password: "" })
+  const [loginInputs, setLoginInputs] = useState({ username: "", password: "" });
+  const [registerInputs, setRegisterInputs] = useState({ username: "", email: "", password: "" });
   const navigate = useNavigate();
 
   const handleModal = () => setShowModal((prev) => !prev);
 
   const handleRegister = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       const registerResponse = await axios.post("http://localhost:5000/register", registerInputs);
-      const { token, user } = registerResponse.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      window.alert(registerResponse.data.message)
-      setRegisterInputs({
-        name: "",
-        email: "",
-        password: ""
-      });
-      window.location.href = "/home";
-    
-    } catch(error){
-      window.alert(error.response.data.message)
+      const { message } = registerResponse.data;
+      window.alert(message);
+      setRegisterInputs({ username: "", email: "", password: "" });
+      setShowModal(false); // Close the modal after successful registration
+    } catch (error) {
+      window.alert(error.response?.data?.message || "An error occurred");
     }
-
   };
 
   const handleLogin = async () => {
     try {
-      const loginResponse = await axios.post("http://localhost:5000/login", loginInputs)
-      window.localStorage.setItem("PRODUCT_VAULT_TKN", loginResponse.data.token)
-      setLoginInputs({
-        email:"",
-        password:""
-      })
-      navigate('/admin/products');
-     
+      const loginResponse = await axios.post("http://localhost:5000/login", loginInputs);
+      localStorage.setItem("PRODUCT_VAULT_TKN", loginResponse.data.token);
+      setLoginInputs({ username: "", password: "" });
+      navigate('/dashboard');
     } catch (error) {
-      // console.log(error.response.data)
-      window.alert(error.response.data.message)
+      window.alert(error.response?.data?.message || "An error occurred");
     }
-    // console.log(loginInputs)
-
   };
 
   return (
@@ -59,14 +44,34 @@ function Home() {
             <h2>SIGN IN</h2>
             <form>
               <div className="form-group">
-                <label>Email</label>
-                <input type="email" placeholder="Enter email" value={loginInputs.email} onChange={(e) => { setLoginInputs(prevState => ({ ...prevState, email: e.target.value })) }} />
+                <label>Username</label>
+                <input
+                  type="text"
+                  placeholder="Enter username"
+                  value={loginInputs.username}
+                  onChange={(e) =>
+                    setLoginInputs((prevState) => ({
+                      ...prevState,
+                      username: e.target.value
+                    }))
+                  }
+                />
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input type="password" placeholder="Password" value={loginInputs.password} onChange={(e) => { setLoginInputs(prevState => ({ ...prevState, password: e.target.value })) }} />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={loginInputs.password}
+                  onChange={(e) =>
+                    setLoginInputs((prevState) => ({
+                      ...prevState,
+                      password: e.target.value
+                    }))
+                  }
+                />
               </div>
-              <button type="button" onClick={handleLogin} className="submit-btn" >
+              <button type="button" onClick={handleLogin} className="submit-btn">
                 LOGIN
               </button>
               <div className="register-section">
@@ -91,20 +96,50 @@ function Home() {
               </span>
             </div>
             <div className="modal-body">
-              <form >
-                <div className="form-group" >
-                  <label>Name</label>
-                  <input type="text" placeholder="Enter name" name="formName" onChange={(e) => { setRegisterInputs(prevState => ({ ...prevState, name: e.target.value })) }}/>
+              <form onSubmit={handleRegister}>
+                <div className="form-group">
+                  <label>Username</label>
+                  <input
+                    type="text"
+                    placeholder="Enter username"
+                    value={registerInputs.username}
+                    onChange={(e) =>
+                      setRegisterInputs((prevState) => ({
+                        ...prevState,
+                        username: e.target.value
+                      }))
+                    }
+                  />
                 </div>
                 <div className="form-group">
                   <label>Email</label>
-                  <input type="email" placeholder="Enter email" name="formEmail" onChange={(e) => { setRegisterInputs(prevState => ({ ...prevState, email: e.target.value })) }}/>
+                  <input
+                    type="email"
+                    placeholder="Enter email"
+                    value={registerInputs.email}
+                    onChange={(e) =>
+                      setRegisterInputs((prevState) => ({
+                        ...prevState,
+                        email: e.target.value
+                      }))
+                    }
+                  />
                 </div>
                 <div className="form-group">
                   <label>Password</label>
-                  <input type="password" placeholder="Password" name="formPassword" onChange={(e) => { setRegisterInputs(prevState => ({ ...prevState, password: e.target.value })) }}/>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={registerInputs.password}
+                    onChange={(e) =>
+                      setRegisterInputs((prevState) => ({
+                        ...prevState,
+                        password: e.target.value
+                      }))
+                    }
+                  />
                 </div>
-                <button type="submit" className="submit-btn" onClick={handleRegister}>
+                <button type="submit" className="submit-btn">
                   Register
                 </button>
               </form>
